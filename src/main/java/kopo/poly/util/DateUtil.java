@@ -18,8 +18,4 @@ public class DateUtil {
 
         return date.format(today);
     }
-
-
-
-
 }
