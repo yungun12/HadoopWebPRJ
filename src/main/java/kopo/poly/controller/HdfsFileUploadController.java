@@ -1,9 +1,9 @@
 package kopo.poly.controller;
 
+import kopo.poly.config.HadoopConfig;
 import kopo.poly.util.DateUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 public class HdfsFileUploadController {
 
-    private final Configuration hadoopConfiguration;
+    private final HadoopConfig hadoopConfig;
 
     // HDFS에 저장되는 폴더 시작 위치
     private String hdfsUploadDir = "/01";
@@ -57,7 +57,7 @@ public class HdfsFileUploadController {
         String hadoopUploadFileName = DateUtil.getDateTime("HHmmss") + "." + ext;
 
         // CentOS에 설치된 하둡 분산 파일 시스템 연결 및 설정하기
-        FileSystem hdfs = FileSystem.get(hadoopConfiguration);
+        FileSystem hdfs = FileSystem.get(hadoopConfig.getHadoopConfiguration());
 
         // 하둡에 파일을 업로드할 폴더
         // 예 : /01/2022/11/20
@@ -87,7 +87,7 @@ public class HdfsFileUploadController {
         FSDataOutputStream outputStream = hdfs.create(path);
 
         // HDFS에 파일 내용 기록하기
-        IOUtils.copyBytes(mf.getInputStream(), outputStream, hadoopConfiguration);
+        IOUtils.copyBytes(mf.getInputStream(), outputStream, hadoopConfig.getHadoopConfiguration());
 
         hdfs.close();
 
