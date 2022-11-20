@@ -14,13 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
-
-
-/*
- * Controller 선언해야만 Spring 프레임워크에서 Controller인지 인식 가능
- * 자바 서블릿 역할 수행
- * */
 @Slf4j
 @RequestMapping(value = "/hdfs")
 @RequiredArgsConstructor
@@ -33,11 +26,10 @@ public class HdfsFileUploadController {
     private String hdfsUploadDir = "/01";
 
     /**
-     * 게시판 리스트 보여주기
+     * HTML 파일로부터 받은 파일 정보를 하둡 분산 파일 시스템에 저장하기
      */
     @PostMapping(value = "uploadFile")
-    public String uploadFile(HttpServletRequest request,
-                             @RequestParam(value = "fileUpload") MultipartFile mf) throws Exception {
+    public String uploadFile(@RequestParam(value = "fileUpload") MultipartFile mf) throws Exception {
 
         log.info(this.getClass().getName() + ".uploadFile Start!");
 

@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Value;
 /**
  * 하둡 접속을 위한 공통 설정을 추상한 객체로 정의
  */
-
 @org.springframework.context.annotation.Configuration
 public class HadoopConfig {
 
