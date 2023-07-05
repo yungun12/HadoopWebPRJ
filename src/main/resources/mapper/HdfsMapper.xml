@@ -4,7 +4,6 @@
 <!-- JAVA와 연결할 Mapper 파일 설정 -->
 <mapper namespace="kopo.poly.persistance.mapper.IHdfsMapper">
 
-    <!-- 수집된 내용 DB에 등록 -->
     <insert id="insertHdfsInfo" parameterType="HdfsDTO">
         INSERT INTO HDFS_INFO
         (FILE_SEQ,
@@ -28,6 +27,17 @@
                REG_DT
         FROM HDFS_INFO
         ORDER BY REG_DT DESC
+    </select>
+
+    <select id="getHdfsInfo" resultType="HdfsDTO" parameterType="HdfsDTO">
+        SELECT FILE_SEQ,
+               FILE_NAME,
+               FILE_PATH,
+               ORG_NAME,
+               EXT,
+               REG_DT
+        FROM HDFS_INFO
+        WHERE FILE_SEQ = #{fileSeq}
     </select>
 
 </mapper>

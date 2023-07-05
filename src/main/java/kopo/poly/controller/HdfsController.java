@@ -117,23 +117,43 @@ public class HdfsController {
     /**
      * HTML 파일로부터 받은 파일 정보를 하둡 분산 파일 시스템에 저장하기
      */
+    @ResponseBody
+    @PostMapping(value = "fileList")
+    public List<HdfsDTO> fileList() throws Exception {
+
+        log.info(this.getClass().getName() + ".fileList Start!");
+
+        List<HdfsDTO> rList = hdfsService.getHdfsInfoList();
+
+        log.info(this.getClass().getName() + ".fileList End!");
+
+        return rList;
+
+    }
+
+    /**
+     * HTML 파일로부터 받은 파일 정보를 하둡 분산 파일 시스템에 저장하기
+     */
     @GetMapping(value = "fileDownload")
     public ResponseEntity<Object> downloadFile(HttpServletRequest request) throws Exception {
 
         log.info(this.getClass().getName() + ".downloadFile Start!");
 
-        String fileName = CmmUtil.nvl(request.getParameter("fileName"));
-        String filePath = CmmUtil.nvl(request.getParameter("filePath"));
-        String orgName = CmmUtil.nvl(request.getParameter("orgName"));
+        String fileSeq = CmmUtil.nvl(request.getParameter("fileSeq"), "0");
+        log.info("fileSeq : " + fileSeq);
 
-        log.info("fileName : " + fileName);
-        log.info("filePath : " + filePath);
+        HdfsDTO pDTO = new HdfsDTO();
+        pDTO.setFileSeq(Long.parseLong(fileSeq));
+
+        // DB 저장된 HDFS 저장 정보가져오기
+        HdfsDTO rDTO = hdfsService.getHdfsInfo(pDTO);
 
         // CentOS에 설치된 하둡 분산 파일 시스템 연결 및 설정하기
         FileSystem hdfs = FileSystem.get(hadoopConfig.getHadoopConfiguration());
 
         // HDFS 업로드된 파일 중 다운로드할 파일을 스트림으로 변환하여 가져오기
-        FSDataInputStream in = hdfs.open(new Path(filePath + "/" + fileName));
+        FSDataInputStream in = hdfs.open(new Path(
+                CmmUtil.nvl(rDTO.getFilePath()) + "/" + CmmUtil.nvl(rDTO.getFileName())));
 
         // 웹에서 다운로드 가능하도록 Byte[] 구조를 다운로 가능한 객체로 변경하기
         // IOUtils.readFullyToByteArray : HDFS 파일 스트림을을 Byte[]로 변환하는 함수
@@ -146,7 +166,8 @@ public class HdfsController {
         HttpHeaders headers = new HttpHeaders();
 
         // 파일 다운로드 헤더값 설정
-        headers.setContentDisposition(ContentDisposition.builder("attachment").filename(orgName).build());  // 다운로드 되거나 로컬에 저장되는 용도로 쓰이는지를 알려주는 헤더
+        headers.setContentDisposition(ContentDisposition.builder("attachment")
+                .filename(CmmUtil.nvl(rDTO.getOrgName())).build());
 
         log.info(this.getClass().getName() + ".downloadFile End!");
 

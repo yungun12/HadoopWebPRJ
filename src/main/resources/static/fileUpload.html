@@ -10,7 +10,19 @@
         // HTML로딩이 완료되고, 실행됨
         $(document).ready(function () {
 
-            // 버튼 클릭했을때, 발생되는 이벤트 생성함(onclick 이벤트와 동일함)
+            // Ajax 호출해서 HDFS 업로드된 파일 리스트 조회하기
+            $.ajax({
+                    url: "/hdfs/fileList",
+                    type: "post", // 전송방식은 Post
+                    data: $("#f").serialize(), // form 태그 내 input 등 객체를 자동으로 전송할 형태로 변경하기
+                    dataType: "JSON", // 전송 결과는 JSON으로 받기
+                    success: function (json) { // /hdfs/fileList 호출이 성공했다면..
+                        doList(json); // HDFS 업로드 파일 리스트 출력하기
+                    }
+                }
+            )
+
+            // HDFS 파일업로드하기
             $("#btnSend").on("click", function () {
 
                 const formData = new FormData();
@@ -23,25 +35,39 @@
                         processData: false,
                         contentType: false,
                         dataType: "JSON", // 전송 결과는 JSON으로 받기
-                        success: function (json) { // /melon/getSongList 호출이 성공했다면..
+                        success: function (json) { // /hdfs/fileUpload 호출이 성공했다면..
+                            doList(json); // HDFS 업로드 파일 리스트 출력하기
 
-                            $("#hdfsData").empty(); // 이전에 등록된 내용 모두 지우기
-
-                            for (let i = 0; i < json.length; i++) {
-
-                                $("#hdfsData").append("<div class=\"divTableRow\">");
-                                $("#hdfsData").append("<div class=\"divTableCell\">" + json[i].fileSeq + "</div>");
-                                $("#hdfsData").append("<div class=\"divTableCell\">" + json[i].orgName + "</div>");
-                                $("#hdfsData").append("<div class=\"divTableCell\">" + json[i].fileName + "</div>");
-                                $("#hdfsData").append("<div class=\"divTableCell\">" + json[i].filePath + "</div>");
-                                $("#hdfsData").append("<div class=\"divTableCell\">" + json[i].regDt + "</div>");
-                                $("#hdfsData").append("</div>");
-                            }
                         }
                     }
                 )
             })
         })
+
+        // HDFS 업로드 파일 리스트 출력하기
+        function doList(json) {
+
+            $("#hdfsData").empty(); // 이전에 출력된 내용 모두 지우기
+
+            for (let i = 0; i < json.length; i++) {
+
+                $("#hdfsData").append("<div class=\"divTableRow\">");
+                $("#hdfsData").append("<div class=\"divTableCell\">" + json[i].fileSeq + "</div>");
+                $("#hdfsData").append("<div class=\"divTableCell\" " +
+                    "onclick=\"doDownload('" + json[i].fileSeq + "')\">" + json[i].orgName + "</div>");
+                $("#hdfsData").append("<div class=\"divTableCell\">" + json[i].fileName + "</div>");
+                $("#hdfsData").append("<div class=\"divTableCell\">" + json[i].filePath + "</div>");
+                $("#hdfsData").append("<div class=\"divTableCell\">" + json[i].regDt + "</div>");
+                $("#hdfsData").append("</div>");
+            }
+        }
+
+        // HDFS 업로드된 파일을 다운로드하기
+        function doDownload(fileSeq) {
+            alert("fileSeq : " + fileSeq);
+            document.location.href = "/hdfs/fileDownload?fileSeq=" + fileSeq;
+        }
+
     </script>
 </head>
 <body>
@@ -72,8 +98,7 @@
             <div class="divTableHead">업로드날짜</div>
         </div>
     </div>
-    <div class="divTableBody" id="hdfsData">
-    </div>
+    <div class="divTableBody" id="hdfsData"></div>
 </div>
 </body>
 </html>
