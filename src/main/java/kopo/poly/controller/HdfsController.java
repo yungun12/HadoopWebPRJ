@@ -29,8 +29,10 @@ import java.util.List;
 @RestController
 public class HdfsController {
 
+    // 하둡 설정 객체
     private final HadoopConfig hadoopConfig;
 
+    // HDFS 업로드된 파일을 DB에 저장 및 조회하기
     private final IHdfsService hdfsService;
 
     // HDFS에 저장되는 폴더 시작 위치
@@ -66,6 +68,7 @@ public class HdfsController {
         // 예 : /01/2022/11/20
         String hadoopUploadFilePath = hdfsUploadDir + "/" + DateUtil.getDateTime("yyyy/MM/dd");
 
+        log.info("hadoopUploadFileName : " + hadoopUploadFileName);
         log.info("hadoopUploadFilePath : " + hadoopUploadFilePath);
 
         // 하둡에 폴더 생성하기
@@ -115,7 +118,7 @@ public class HdfsController {
     }
 
     /**
-     * HTML 파일로부터 받은 파일 정보를 하둡 분산 파일 시스템에 저장하기
+     * 하둡 분산 파일 시스템에 저장된 전체 파일 조회하기
      */
     @ResponseBody
     @PostMapping(value = "fileList")
@@ -132,7 +135,7 @@ public class HdfsController {
     }
 
     /**
-     * HTML 파일로부터 받은 파일 정보를 하둡 분산 파일 시스템에 저장하기
+     * 하둡 분산 파일 시스템에 저장된 파일 다운로드하기
      */
     @GetMapping(value = "fileDownload")
     public ResponseEntity<Object> downloadFile(HttpServletRequest request) throws Exception {
