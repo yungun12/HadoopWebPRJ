@@ -1,37 +1,32 @@
 package kopo.poly.config;
 
-import org.apache.hadoop.conf.Configuration;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-/**
- * 하둡 접속을 위한 공통 설정을 추상한 객체로 정의
- */
-@org.springframework.context.annotation.Configuration
+@Configuration
 public class HadoopConfig {
 
-    // 네임노드가 설치된 마스터 서버 IP
-    @Value("${hadoop.hdfs.namenode.host}")
-    String namenodeHost = "192.168.2.136";
+    @Value("${hadoop.master.ip}")
+    String namenodeHost;
 
     // 네임노드 포트
-    @Value("${hadoop.hdfs.namenode.port}")
-    String namemodePort = "9000";
+    @Value("${hadoop.master.namenode.port}")
 
-    // 얀 포트
-    @Value("${hadoop.yarn.port}")
-    String yarnPort = "8080";
+    String namemodePort;
 
-    /*
-     * 하둡 접속 설정
-     * */
-    public Configuration getHadoopConfiguration() {
+    @Value("${hadoop.master.resourcemanager.port}")// 얀 포트
+    String yarnPort;
 
-        Configuration conf = new Configuration();
+    @Bean
+    public org.apache.hadoop.conf.Configuration getHadoopConfiguration() {
 
-        // fs.defaultFS 설정 값 : hdfs://192.168.2.136:9000
+        org.apache.hadoop.conf.Configuration conf = new org.apache.hadoop.conf.Configuration();
+
+        // fs.defaultFS 설정 값 : hdfs://192.168.2.132:8020
         conf.set("fs.defaultFS", "hdfs://" + namenodeHost + ":" + namemodePort);
 
-        // yarn 주소 설정
+        // 리소스매니저 접속 설정 : 192.168.2.132:8032
         conf.set("yarn.resourcemanager.address", namenodeHost + ":" + yarnPort);
 
         return conf;

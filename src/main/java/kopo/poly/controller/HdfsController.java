@@ -1,12 +1,12 @@
 package kopo.poly.controller;
 
-import kopo.poly.config.HadoopConfig;
 import kopo.poly.dto.HdfsDTO;
 import kopo.poly.service.IHdfsService;
 import kopo.poly.util.CmmUtil;
 import kopo.poly.util.DateUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
@@ -30,7 +30,7 @@ import java.util.List;
 public class HdfsController {
 
     // 하둡 설정 객체
-    private final HadoopConfig hadoopConfig;
+    private final Configuration hadoopConfig;
 
     // HDFS 업로드된 파일을 DB에 저장 및 조회하기
     private final IHdfsService hdfsService;
@@ -62,7 +62,7 @@ public class HdfsController {
         String hadoopUploadFileName = DateUtil.getDateTime("HHmmss") + "." + ext;
 
         // CentOS에 설치된 하둡 분산 파일 시스템 연결 및 설정하기
-        FileSystem hdfs = FileSystem.get(hadoopConfig.getHadoopConfiguration());
+        FileSystem hdfs = FileSystem.get(hadoopConfig);
 
         // 하둡에 파일을 업로드할 폴더
         // 예 : /01/2022/11/20
@@ -93,7 +93,7 @@ public class HdfsController {
         FSDataOutputStream out = hdfs.create(path);
 
         // HDFS에 파일 내용 기록하기
-        IOUtils.copyBytes(mf.getInputStream(), out, hadoopConfig.getHadoopConfiguration());
+        IOUtils.copyBytes(mf.getInputStream(), out, hadoopConfig);
 
         out.close(); // FSDataOutputStream 객체 닫기(사용이 완료되면 객체을 꼭 닫자!)
         hdfs.close(); // FileSystem 하둡 연결 끊고 닫기
@@ -152,7 +152,7 @@ public class HdfsController {
         HdfsDTO rDTO = hdfsService.getHdfsInfo(pDTO);
 
         // CentOS에 설치된 하둡 분산 파일 시스템 연결 및 설정하기
-        FileSystem hdfs = FileSystem.get(hadoopConfig.getHadoopConfiguration());
+        FileSystem hdfs = FileSystem.get(hadoopConfig);
 
         // HDFS 업로드된 파일 중 다운로드할 파일을 스트림으로 변환하여 가져오기
         FSDataInputStream in = hdfs.open(new Path(
