@@ -10,17 +10,18 @@
         // HTML로딩이 완료되고, 실행됨
         $(document).ready(function () {
 
-            // Ajax 호출해서 HDFS 업로드된 파일 리스트 조회하기
+            // Ajax 호출해서 멜론차트 조회하기
             $.ajax({
-                    url: "/hdfs/fileList",
-                    type: "post", // 전송방식은 Post
-                    data: $("#f").serialize(), // form 태그 내 input 등 객체를 자동으로 전송할 형태로 변경하기
-                    dataType: "JSON", // 전송 결과는 JSON으로 받기
-                    success: function (json) { // /hdfs/fileList 호출이 성공했다면..
-                        doList(json); // HDFS 업로드 파일 리스트 출력하기
-                    }
+                url: "/hdfs/v1/fileList",
+                type: "post", // 전송방식은 Post
+                data: $("#f").serialize(), // form 태그 내 input 등 객체를 자동으로 전송할 형태로 변경하기
+                dataType: "JSON", // 전송 결과는 JSON으로 받기
+            }).then(
+                function (json) { // 성공
+                    doList(json); // HDFS 업로드 파일 리스트 출력하기
+
                 }
-            )
+            );
 
             // HDFS 파일업로드하기
             $("#btnSend").on("click", function () {
@@ -28,19 +29,20 @@
                 const formData = new FormData();
                 formData.append("hdfsUpload", $("#fileUpload")[0].files[0]);
 
-                $.ajax({ // Ajax 호출
-                        url: "/hdfs/fileUpload",
-                        type: "post", // 전송방식은 Post
-                        data: formData,
-                        processData: false,
-                        contentType: false,
-                        dataType: "JSON", // 전송 결과는 JSON으로 받기
-                        success: function (json) { // /hdfs/fileUpload 호출이 성공했다면..
-                            doList(json); // HDFS 업로드 파일 리스트 출력하기
+                $.ajax({
+                    url: "/hdfs/v1/fileUpload",
+                    type: "post", // 전송방식은 Post
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    dataType: "JSON", // 전송 결과는 JSON으로 받기
+                }).then(
+                    function (json) { // 성공
+                        alert("파일 업로드가 성공하였습니다.");
+                        doList(json); // HDFS 업로드 파일 리스트 출력하기
 
-                        }
                     }
-                )
+                );
             })
         })
 
@@ -49,23 +51,24 @@
 
             $("#hdfsData").empty(); // 이전에 출력된 내용 모두 지우기
 
-            for (let i = 0; i < json.length; i++) {
+            const result = json.data;
 
+            for (const data of result) {
                 $("#hdfsData").append("<div class=\"divTableRow\">");
-                $("#hdfsData").append("<div class=\"divTableCell\">" + json[i].fileSeq + "</div>");
+                $("#hdfsData").append("<div class=\"divTableCell\">" + data.fileSeq + "</div>");
                 $("#hdfsData").append("<div class=\"divTableCell\" " +
-                    "onclick=\"doDownload('" + json[i].fileSeq + "')\">" + json[i].orgName + "</div>");
-                $("#hdfsData").append("<div class=\"divTableCell\">" + json[i].fileName + "</div>");
-                $("#hdfsData").append("<div class=\"divTableCell\">" + json[i].filePath + "</div>");
-                $("#hdfsData").append("<div class=\"divTableCell\">" + json[i].regDt + "</div>");
+                    "onclick=\"doDownload('" + data.fileSeq + "')\">" + data.orgName + "</div>");
+                $("#hdfsData").append("<div class=\"divTableCell\">" + data.fileName + "</div>");
+                $("#hdfsData").append("<div class=\"divTableCell\">" + data.filePath + "</div>");
+                $("#hdfsData").append("<div class=\"divTableCell\">" + data.regDt + "</div>");
                 $("#hdfsData").append("</div>");
             }
         }
 
         // HDFS 업로드된 파일을 다운로드하기
         function doDownload(fileSeq) {
-            alert("fileSeq : " + fileSeq);
-            document.location.href = "/hdfs/fileDownload?fileSeq=" + fileSeq;
+            document.location.href = "/hdfs/v1/fileDownload?fileSeq=" + fileSeq;
+
         }
 
     </script>

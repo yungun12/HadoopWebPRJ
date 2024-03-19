@@ -1,5 +1,6 @@
 package kopo.poly.controller;
 
+import kopo.poly.controller.response.CommonResponse;
 import kopo.poly.dto.HdfsDTO;
 import kopo.poly.service.IHdfsService;
 import kopo.poly.util.CmmUtil;
@@ -24,7 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Slf4j
-@RequestMapping(value = "/hdfs")
+@RequestMapping(value = "/hdfs/v1")
 @RequiredArgsConstructor
 @RestController
 public class HdfsController {
@@ -43,7 +44,7 @@ public class HdfsController {
      */
     @ResponseBody
     @PostMapping(value = "fileUpload")
-    public List<HdfsDTO> fileUpload(@RequestParam(value = "hdfsUpload") MultipartFile mf) throws Exception {
+    public ResponseEntity fileUpload(@RequestParam(value = "hdfsUpload") MultipartFile mf) throws Exception {
 
         log.info(this.getClass().getName() + ".fileUpload Start!");
 
@@ -114,7 +115,8 @@ public class HdfsController {
 
         log.info(this.getClass().getName() + ".fileUpload End!");
 
-        return rList;
+        return ResponseEntity.ok(
+                CommonResponse.of(HttpStatus.OK, HttpStatus.OK.series().name(), rList));
     }
 
     /**
@@ -122,7 +124,7 @@ public class HdfsController {
      */
     @ResponseBody
     @PostMapping(value = "fileList")
-    public List<HdfsDTO> fileList() throws Exception {
+    public ResponseEntity fileList() throws Exception {
 
         log.info(this.getClass().getName() + ".fileList Start!");
 
@@ -130,7 +132,8 @@ public class HdfsController {
 
         log.info(this.getClass().getName() + ".fileList End!");
 
-        return rList;
+        return ResponseEntity.ok(
+                CommonResponse.of(HttpStatus.OK, HttpStatus.OK.series().name(), rList));
 
     }
 
