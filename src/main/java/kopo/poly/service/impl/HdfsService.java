@@ -21,12 +21,12 @@ public class HdfsService implements IHdfsService {
     @Override
     public List<HdfsDTO> getHdfsInfoList() throws Exception {
 
-        log.info(this.getClass().getName() + ".getHdfsInfoList Start!");
+        log.info("{}.getHdfsInfoList Start!", this.getClass().getName());
 
         // HDFS 업로드된 전체 파일 정보를 DB 조회하기
         List<HdfsDTO> rList = Optional.ofNullable(hdfsMapper.getHdfsInfoList()).orElseGet(ArrayList::new);
 
-        log.info(this.getClass().getName() + ".getHdfsInfoList End!");
+        log.info("{}.getHdfsInfoList End!", this.getClass().getName());
 
         return rList;
     }
@@ -34,7 +34,7 @@ public class HdfsService implements IHdfsService {
     @Override
     public List<HdfsDTO> insertHdfsFileInfo(HdfsDTO pDTO) throws Exception {
 
-        log.info(this.getClass().getName() + ".insertHdfsFileInfo Start!");
+        log.info("{}.insertHdfsFileInfo Start!", this.getClass().getName());
 
         // HDFS 업로드된 파일 정보를 DB 저장하기
         hdfsMapper.insertHdfsInfo(pDTO);
@@ -42,7 +42,7 @@ public class HdfsService implements IHdfsService {
         // HDFS 업로드된 전체 파일 정보를 DB 조회하기
         List<HdfsDTO> rList = Optional.ofNullable(hdfsMapper.getHdfsInfoList()).orElseGet(ArrayList::new);
 
-        log.info(this.getClass().getName() + ".insertHdfsFileInfo End!");
+        log.info("{}.insertHdfsFileInfo End!", this.getClass().getName());
 
         return rList;
     }
@@ -50,15 +50,14 @@ public class HdfsService implements IHdfsService {
     @Override
     public HdfsDTO getHdfsInfo(HdfsDTO pDTO) throws Exception {
 
-        log.info(this.getClass().getName() + ".getHdfsInfo Start!");
+        log.info("{}.getHdfsInfo Start!", this.getClass().getName());
 
         // HDFS 업로드된 전체 파일 정보를 DB 조회하기
         HdfsDTO rDTO = Optional.ofNullable(hdfsMapper.getHdfsInfo(pDTO)).orElseGet(HdfsDTO::new);
 
-        log.info(this.getClass().getName() + ".getHdfsInfo End!");
+        log.info("{}.getHdfsInfo End!", this.getClass().getName());
 
         return rDTO;
     }
 
 }
-

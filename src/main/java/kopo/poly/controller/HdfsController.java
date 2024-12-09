@@ -46,17 +46,17 @@ public class HdfsController {
     @PostMapping(value = "fileUpload")
     public ResponseEntity fileUpload(@RequestParam(value = "hdfsUpload") MultipartFile mf) throws Exception {
 
-        log.info(this.getClass().getName() + ".fileUpload Start!");
+        log.info("{}.fileUpload Start!", this.getClass().getName());
 
         // 업로드하는 실제 파일명
         // 다운로드 기능 구현시, 임의로 정의된 파일명을 원래대로 만들어주기 위한 목적
-        String originalFileName = mf.getOriginalFilename();
+        String originalFileName = CmmUtil.nvl(mf.getOriginalFilename());
 
         // 파일 확장자 가져오기(파일 확장자를 포함한 전체 이름(myimage.jpg)에서 뒤쪽부터 .이 존재하는 위치 찾기
         String ext = originalFileName.substring(originalFileName.lastIndexOf(".") + 1).toLowerCase();
 
-        log.info("originalFileName : " + originalFileName);
-        log.info("ext : " + ext);
+        log.info("originalFileName : {}", originalFileName);
+        log.info("ext : {}", ext);
 
         // HDFS에 저장되는 파일명(사용자가 업로드하는 파일명에 한글 등 특수문자가 존재할 수 있기 때문에
         // 실제 저장되는 이름은 영어, 숫자만 사용함
@@ -69,8 +69,8 @@ public class HdfsController {
         // 예 : /01/2022/11/20
         String hadoopUploadFilePath = hdfsUploadDir + "/" + DateUtil.getDateTime("yyyy/MM/dd");
 
-        log.info("hadoopUploadFileName : " + hadoopUploadFileName);
-        log.info("hadoopUploadFilePath : " + hadoopUploadFilePath);
+        log.info("hadoopUploadFileName : {}", hadoopUploadFileName);
+        log.info("hadoopUploadFilePath : {}", hadoopUploadFilePath);
 
         // 하둡에 폴더 생성하기
         // hadoop fs -mkdir -p /01/2022/11/20
@@ -100,10 +100,10 @@ public class HdfsController {
         hdfs.close(); // FileSystem 하둡 연결 끊고 닫기
 
         log.info("DB 저장될 정보들 출력하기");
-        log.info("hadoopUploadFileName : " + hadoopUploadFileName);
-        log.info("hadoopUploadFilePath : " + hadoopUploadFilePath);
-        log.info("originalFileName : " + originalFileName);
-        log.info("ext : " + ext);
+        log.info("hadoopUploadFileName : {}", hadoopUploadFileName);
+        log.info("hadoopUploadFilePath : {}", hadoopUploadFilePath);
+        log.info("originalFileName : {}", originalFileName);
+        log.info("ext : {}", ext);
 
         HdfsDTO pDTO = new HdfsDTO();
         pDTO.setFileName(hadoopUploadFileName); // 하둡분산파일시스템에 저장되는 파일명
@@ -113,7 +113,7 @@ public class HdfsController {
 
         List<HdfsDTO> rList = hdfsService.insertHdfsFileInfo(pDTO);
 
-        log.info(this.getClass().getName() + ".fileUpload End!");
+        log.info("{}.fileUpload End!", this.getClass().getName());
 
         return ResponseEntity.ok(
                 CommonResponse.of(HttpStatus.OK, HttpStatus.OK.series().name(), rList));
@@ -126,11 +126,11 @@ public class HdfsController {
     @PostMapping(value = "fileList")
     public ResponseEntity fileList() throws Exception {
 
-        log.info(this.getClass().getName() + ".fileList Start!");
+        log.info("{}.fileList Start!", this.getClass().getName());
 
         List<HdfsDTO> rList = hdfsService.getHdfsInfoList();
 
-        log.info(this.getClass().getName() + ".fileList End!");
+        log.info("{}.fileList End!", this.getClass().getName());
 
         return ResponseEntity.ok(
                 CommonResponse.of(HttpStatus.OK, HttpStatus.OK.series().name(), rList));
@@ -143,10 +143,10 @@ public class HdfsController {
     @GetMapping(value = "fileDownload")
     public ResponseEntity<Object> downloadFile(HttpServletRequest request) throws Exception {
 
-        log.info(this.getClass().getName() + ".downloadFile Start!");
+        log.info("{}.downloadFile Start!", this.getClass().getName());
 
         String fileSeq = CmmUtil.nvl(request.getParameter("fileSeq"), "0");
-        log.info("fileSeq : " + fileSeq);
+        log.info("fileSeq : {}", fileSeq);
 
         HdfsDTO pDTO = new HdfsDTO();
         pDTO.setFileSeq(Long.parseLong(fileSeq));
@@ -175,7 +175,7 @@ public class HdfsController {
         headers.setContentDisposition(ContentDisposition.builder("attachment")
                 .filename(CmmUtil.nvl(rDTO.getOrgName())).build());
 
-        log.info(this.getClass().getName() + ".downloadFile End!");
+        log.info("{}.downloadFile End!", this.getClass().getName());
 
         return new ResponseEntity<>(resource, headers, HttpStatus.OK);
 

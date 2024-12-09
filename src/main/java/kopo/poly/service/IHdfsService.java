@@ -22,4 +22,3 @@ public interface IHdfsService {
      */
     HdfsDTO getHdfsInfo(HdfsDTO pDTO) throws Exception;
 }
-
